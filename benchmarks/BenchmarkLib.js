@@ -4,7 +4,9 @@ TEST_BINARY_ROOT = "https://hifi-public.s3.amazonaws.com/test_scene_data/";
 TEST_SCRIPTS_ROOT = TEST_ROOT + "scripts/";
 TEST_SCENES_ROOT = TEST_ROOT + "scenes/";
 DEFAULT_TRACING_RULES = "" +
-    "trace.*=true\n" +
+    "trace.render=true\n" +
+	"trace.simulation=true\n" +
+	"trace.workload=true\n" +
     "*.detail=false\n" +
     "";
 

@@ -15,8 +15,11 @@ Resources.overrideUrlPrefix(TEST_ROOT, Script.resolvePath(".."));
 
 var TRACE_TOOLBAR = "com.highfidelity.interface.toolbar.trace";
 var TRACE_ICON = Script.resolvePath("../assets/traceButton.png"); 
+var TRACE_NAME_BASE = "trace-";
 var TRACE_NAME = "trace-{DATE}_{TIME}";
-var TRACE_DURATION = 20;
+var TRACE_DURATION = 30;
+
+var traceCounter = 0;
 
 var traceActive = false;
 var tablet = Tablet.getTablet("com.highfidelity.interface.tablet.system");
@@ -40,44 +43,25 @@ function startTrace() {
     if (traceActive) {
         return;
     }
-    var newTraceName = Window.prompt("Name of trace file", TRACE_NAME);
-    if (!newTraceName) {
-        return;
-    }
-    TRACE_NAME = newTraceName;
+	
+    TRACE_NAME = TRACE_NAME_BASE + traceCounter;
+	traceCounter++;
 
-    var newTraceDuration = Window.prompt("Trace duration in seconds (0 for manual shutdown)", TRACE_DURATION);
-    if (newTraceDuration == "") {
-        return;
-    }
-    newTraceDuration = Number(newTraceDuration);
-    if (isNaN(newTraceDuration)) {
-        return;
-    }
-    
-    if (newTraceDuration > 60) {
-        Window.alert("Max trace time is 60 seconds");
-        return;
-    }
-
-    TRACE_DURATION = newTraceDuration; 
     traceActive = true;
     button.editProperties({isActive: traceActive});
     print("QQQ starting trace " + TRACE_NAME + " for " + TRACE_DURATION + " seconds");
-    Test.startTracing(DEFAULT_TRACING_RULES);
+    Test.startTracing("trace.*=true");
+	//Test.startTracing("trace.*=false\ntrace.render*=true\ntrace.render_detail*=true\ntrace.simulation=true\ntrace.workload=true\ntrace.app=true");
     if (TRACE_DURATION > 0) {
         Script.setTimeout(function(){
-            stopTrace();
+			stopTrace();
+            startTrace();
         }, TRACE_DURATION * 1000);
     }
 }
 
 function traceToggle() {
-    if (traceActive) {
-        stopTrace();
-    } else {
-        startTrace();
-    }
+    startTrace();
 }
 
 function onClicked() {
